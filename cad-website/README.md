@@ -53,35 +53,36 @@ Sources checked for the privacy wording:
 - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) and [data collection](https://developers.cloudflare.com/web-analytics/data-metrics/data-origin-and-collection/).
 - [Cloudflare cookie documentation](https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/).
 
-## Cloudflare Pages deployment
+## Cloudflare Workers deployment
 
-Deploy the current static site first, with the contact form disabled. Form delivery and a custom domain are separate follow-up tasks.
+Deploy the current static site first, with the contact form disabled. Form delivery and a custom domain are separate follow-up tasks. Workers Static Assets replaces the earlier Pages setup; keep the existing `cad-landing-page` Worker.
 
-**Deployment status:** awaiting Cloudflare account authorization and project creation. The production URL and automatic deployment have not yet been verified; record the actual `pages.dev` URL here after the first successful deployment.
+**Deployment status:** the owner has created the Worker, but its dashboard reports a disconnected GitHub account. Reconnect GitHub before relying on deployment on push. The production URL and automatic deployment have not yet been verified; record the actual `workers.dev` URL here after the first successful deployment.
 
-Use Cloudflare Pages' native GitHub integration with these dashboard settings:
+The repository-root `wrangler.jsonc` names the existing Worker and sets `assets.directory` to `./cad-website`. This tells Wrangler which directory to publish; there is no Pages-style build output field. No Worker script or application build is needed for this static site.
+
+Use these Workers Builds settings:
 
 | Setting | Value |
 | --- | --- |
-| Project name | `cad-development`, if available |
+| Worker name | `cad-landing-page` |
 | GitHub repository | `CristianCristea/CAD-landing-page` (private) |
 | Production branch | `main` |
-| Framework preset | None |
-| Root directory | Leave blank (repository root) |
-| Build command | `exit 0` |
-| Build output directory | `cad-website` |
-| Automatic production deployments | Enabled |
-| Preview deployments | All non-production branches |
+| Root directory | `/` (repository root) |
+| Build command | None (leave blank) |
+| Deploy command | `npx wrangler deploy` |
+| Automatic production builds | Enabled |
+| Preview builds | Enable non-production branches; use the current Workers preview command offered by the dashboard |
 
-In the Cloudflare dashboard, open Workers & Pages → Create application → Pages → Import an existing Git repository. Authorize the Cloudflare GitHub application for this repository, select it, apply the settings above, and choose Save and Deploy. Use the generated `pages.dev` URL for the initial release. These are dashboard settings, not configuration automatically applied by this README. See the [static HTML guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/) and [Git integration documentation](https://developers.cloudflare.com/pages/configuration/git-integration/).
+Reconnect the repository under the Worker's Settings → Builds. If authorization is missing, configure the Cloudflare Workers & Pages application in GitHub's installed applications and grant access to this repository. Keep the existing Worker name, which must agree with `wrangler.jsonc`. Use the generated `workers.dev` URL for the initial release. See [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/) and [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
-Only the contents of `cad-website/` are published. Keep this output directory unchanged so `company-documents/` and the archived `landing-page/` remain outside the deployed artifact. No package installation, GitHub Actions workflow, deployment secret, or build step is needed.
+Only the contents of `cad-website/` are published. Keep `assets.directory` unchanged so `company-documents/` and the archived `landing-page/` remain outside the deployed artifact. Cloudflare runs Wrangler as deployment tooling; the website itself still has no runtime dependencies or build step. Cloudflare manages the build's deployment credentials; do not commit tokens to this repository.
 
-After creating the project, enable Metrics → Web Analytics. Cloudflare injects the beacon on the next deployment; no account-specific beacon token is embedded in this source. See [Cloudflare setup](https://developers.cloudflare.com/pages/how-to/web-analytics/).
+Web Analytics is still pending account setup. The earlier Pages-specific one-click injection instructions do not apply to this Worker. Configure the deployed hostname in Cloudflare Web Analytics and follow its installation instructions; for manual installation, use the site's generated beacon snippet on each content page, then redeploy and verify requests. No beacon has been added yet. Worker request metrics are separate from browser-based Web Analytics. See [Web Analytics setup](https://developers.cloudflare.com/web-analytics/get-started/).
 
 ### Push workflow and release checks
 
-1. Check changes locally, including `node --check cad-website/assets/js/blue.js` from the repository root. Commit the intended files and push `main` to `origin`; Cloudflare automatically deploys that commit. Other branches create preview deployments rather than replacing production.
+1. Check changes locally, including `node --check cad-website/assets/js/blue.js` from the repository root. Commit the intended files and push `main` to `origin`; Cloudflare automatically deploys that commit. With preview builds enabled, other branches create previews rather than replacing production.
 2. In the project's Deployments tab, confirm the production deployment succeeds and its commit SHA matches the pushed commit. Check the generated HTTPS URL before treating the release as complete.
 3. Verify the homepage, legal pages, relative assets, favicon, section anchors, and the old `blue.html` redirect, including query parameters and fragments. Check mobile and desktop layouts and keyboard navigation. Confirm the form remains disabled and attempting submission generates no requests.
 4. Confirm Web Analytics is enabled and the redeployed site loads its beacon. Inspect requests and cookies against the privacy policy and the enabled Cloudflare settings; mentioning analytics in the policy does not enable it.
@@ -120,13 +121,15 @@ Photo by **Karl Pawlowicz** on Unsplash: [A computer monitor sitting on top of a
 
 The form is intentionally inactive. It has editable Name, Email, Company, and Message fields, a disabled Send button, and an availability note. The disabled button, inline `onsubmit` guard, and JavaScript submission guard prevent normal submission. The form sends and stores no data. The checked-in website code has no submission endpoint, cookies, browser storage, or analytics beacon; Cloudflare may add analytics during deployment as described above.
 
-Contact wiring follows the initial Cloudflare Pages deployment and requires a delivery service and destination inbox. The intended Cloudflare redirect or email-routing behavior will be clarified during that task. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
+Contact wiring follows the initial Cloudflare Workers deployment and requires a delivery service and destination inbox. The intended Cloudflare redirect or email-routing behavior will be clarified during that task. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
 
 ## Source archive
 
 `../landing-page/` remains unchanged. The initial agency identity and project names derive from that archive; the current positioning and process copy follow the approved homepage revision. The abstract logo and matching icons are new artwork created for the standalone site. The standalone site does not depend on the archive at runtime.
 
 ## Verification
+
+The Workers configuration passed `wrangler 4.153.0 deploy --dry-run` on 2026-10-26, reading 28 files from `cad-website/`. The Worker name, asset directory, homepage presence, and exclusion of PDFs and symlinks were checked, along with JavaScript syntax and Git whitespace. No website HTML, CSS, or JavaScript changed during this configuration update. A dry run does not verify GitHub authorization, analytics, or a live deployment.
 
 Deployment preparation was checked locally on 2026-10-26: JavaScript syntax and Git whitespace checks passed; all 108 local HTML asset/link/fragment references across five HTML files and all CSS asset references resolve. The publish directory contains no PDFs or symlinks. Headless Chrome checks passed on the homepage and three legal pages at 320, 390, 767, 768, 1024, and 1440px, including loaded images, no horizontal overflow, keyboard skip navigation, menu Enter/Escape behavior, section focus, the disabled form with no submission requests or browser storage, the blue-page redirect with query and fragment preservation, and no-JavaScript navigation/content. Mobile and desktop screenshots were reviewed. These checks used local files; HTTPS hosting, injected analytics, and deployment on push still require the Cloudflare project to be connected and verified.
 

@@ -1,0 +1,8 @@
+{
+  "name": "cad-landing-page",
+  "compatibility_date": "2026-10-26",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./cad-website"
+  }
+}
