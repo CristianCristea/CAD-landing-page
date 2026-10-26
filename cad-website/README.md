@@ -6,9 +6,9 @@ A standalone, responsive software development agency website built with HTML, CS
 
 The homepage leads with custom business software, integrations, and practical AI automation. Three primary services cover custom web applications, automation and integrations, and existing software improvements. Business websites and e-commerce appear as a secondary, full-width offering beneath them. Primary services use three columns from 768px upward and stack at 767px and below.
 
-The hero describes business understanding and direct software delivery, without a separate About section or unverified team credentials. The process names the deliverables at each stage: agreed scope, proposal, working demonstrations, and a tested release with documentation and handover. Post-launch issue-resolution scope and duration are defined in the proposal; ongoing maintenance is agreed separately.
+The hero describes business understanding and direct software delivery, without a separate About section or unverified team credentials. The process starts with an initial discussion of goals and priorities. Detailed discovery is included in the project proposal and takes place after agreement, establishing requirements and scope before development. Later stages provide working demonstrations and a tested release with documentation and handover. Post-launch issue-resolution scope and duration are defined in the proposal; ongoing maintenance is agreed separately.
 
-This revision is in English and does not target a specific industry or geography. Working contact delivery and evidence-backed case studies are deferred, so this content revision does not make the site ready to receive enquiries.
+This revision is in English and states that CAD works with clients internationally, in English and German. No language switch is shown until German pages are available; the site does not target a specific industry or geography. Working contact delivery and evidence-backed case studies are deferred, so this content revision does not make the site ready to receive enquiries.
 
 ## Preview
 
@@ -66,14 +66,14 @@ Each project is a self-contained `<article>` preceded by a `PROJECT:` comment. K
 
 | Project | Anchor | Presentation |
 | --- | --- | --- |
-| Lavina | `#project-lavina` | `lavina.svg` |
-| A-Menu | `#project-a-menu` | `a-menu.svg` |
 | Maine GLB | `#project-maine-glb` | Plain text name |
 | VTD | `#project-vtd` | Plain text name |
+| A-Menu | `#project-a-menu` | Plain text name |
+| Lavina | `#project-lavina` | Plain text name |
 
-Exactly four projects are displayed, numbered `01 / 04` through `04 / 04`. Maine GLB and VTD use text treatments because no brand logos were supplied. Replace those text spans with local logo images when available. Add verified descriptions, screenshots, results, and links when ready; no project narratives or testimonials are inferred.
+Exactly four projects are displayed in the order above, numbered `01 / 04` through `04 / 04`. Each card includes the owner-supplied subtitle, introduction, contribution, result, and service tags. All content is visible without hover or JavaScript. Cards use two columns on desktop and one column below 768px.
 
-Before adding case studies, establish each project's problem, CAD's actual contribution, the delivered solution, and a substantiated outcome. The archived template case-study narratives are not evidence of CAD's work.
+All four project cards use consistent text treatments. The A-Menu and Lavina logos were removed from the cards at the owner's request; the asset files are retained. Maine GLB is identified as a private internal system. Only Lavina links to a public project, at `https://lavina.jo/`; the other cards have no links. No screenshots, testimonials, or performance metrics are invented. The section introduction attributes these projects to members of the team; the archived template case-study narratives are not used. No German version currently exists.
 
 ## Brand mark
 
@@ -91,13 +91,15 @@ Photo by **Karl Pawlowicz** on Unsplash: [A computer monitor sitting on top of a
 
 The form is intentionally inactive. It has editable Name, Email, Company, and Message fields, a disabled Send button, and an availability note. The disabled button, inline `onsubmit` guard, and JavaScript submission guard prevent normal submission. The form sends and stores no data. The checked-in website code has no submission endpoint, cookies, browser storage, or analytics beacon; Cloudflare may add analytics during deployment as described above.
 
-Contact wiring is the next task, before deployment, and requires a delivery service and destination inbox. Hosting has been selected as Cloudflare. The current legal contact uses the supplied postal address; no email address is inferred.
+Contact wiring is the next task, before deployment, and requires a delivery service and destination inbox. Hosting has been selected as Cloudflare. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
 
 ## Source archive
 
 `../landing-page/` remains unchanged. The initial agency identity and project names derive from that archive; the current positioning and process copy follow the approved homepage revision. The abstract logo and matching icons are new artwork created for the standalone site. The standalone site does not depend on the archive at runtime.
 
 ## Verification
+
+The detailed project cards were checked in headless Chrome on 2026-10-26 at 320, 390, 767, 768, 1024, and 1440px. Checks passed for project order, one/two-column layouts, visible content without JavaScript, loaded logos, heading hierarchy, keyboard Tab/Enter access to Lavina, visible focus, and 45 text-contrast samples. Local links and ARIA references resolve, the JavaScript syntax check passes, and the public Lavina destination was reachable. All homepage HTML outside the work section and all unrelated files were verified unchanged. Mobile and desktop section screenshots were reviewed; other browser engines were not tested. No deployment was performed.
 
 The legal-page addition was checked in headless Chrome on 2026-10-26 across the homepage and all three legal pages at 320, 390, 767, 768, 1024, and 1440px. Checks passed for horizontal overflow, loaded images, unique page metadata, footer legal links, operator attribution, and current-page navigation markers. Mobile cross-page navigation and same-page section focus, Escape, keyboard skip links, no-JavaScript navigation, direct-file links, continuous icon-link hover underlines, and the inactive form passed without runtime or asset-load errors. Desktop and mobile legal-page screenshots were reviewed. All local links and fragment targets resolve; the PDF move preserved its hash, the homepage main content was unchanged, and the source archive was unchanged. These are local Chrome checks, not production hosting or legal-compliance certification.
 
