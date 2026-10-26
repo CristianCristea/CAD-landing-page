@@ -1,0 +1,9 @@
+Final refinement with the built-in image_gen tool on 2026-10-26. Transparent background: true.
+Input: the existing simplified CAD symbol.
+
+Use case: precise-object-edit / logo-brand.
+Edit this existing CAD logo, preserving its simple blue circular outer silhouette, size, diagonal opening at the upper right, and genuinely transparent background.
+The user says: "the c inside is blurry." Correct that specific defect.
+Replace the blurry dark C-shaped band inside the circle with a single sharply defined, flat, fully opaque navy C (#182B45). The inner C must have clean concentric circular edges, consistent stroke thickness, and crisp flat terminals opening toward the upper-right diagonal notch. Keep it comfortably inside the outer blue shape and retain a generous blue margin. Make it unmistakably legible, simple, and balanced, including at favicon sizes.
+The surrounding blue must be a perfectly uniform solid #245CAA. Use exactly these two flat colors plus transparent background. NO soft shading, blur, gradients, translucent areas within the colored shapes, texture, speckles, shadows, bevel, glow, or 3D. This should look like clean SVG geometry, with only normal edge antialiasing.
+Remove stray colored pixels in the transparent diagonal cut. Do not add text, additional symbols, mockups, or alternatives. Deliver the same logo with a crisp inner C.
