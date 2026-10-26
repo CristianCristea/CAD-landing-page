@@ -53,12 +53,41 @@ Sources checked for the privacy wording:
 - [Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/) and [data collection](https://developers.cloudflare.com/web-analytics/data-metrics/data-origin-and-collection/).
 - [Cloudflare cookie documentation](https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/).
 
-### Before deployment
+## Cloudflare Pages deployment
 
-1. Activate the contact form, select its delivery service and destination inbox, and verify actual receipt. Update the privacy policy to describe the implemented form fields, purpose, recipients, retention, and any cross-border handling before it accepts submissions.
-2. Enable Cloudflare Web Analytics for the deployed site. For a Pages project, use Workers & Pages → project → Metrics → Enable Web Analytics, then redeploy. See [Cloudflare setup](https://developers.cloudflare.com/pages/how-to/web-analytics/). No account-specific beacon token is embedded in this source.
-3. Inspect the deployed website's requests and cookies, including any automatically injected scripts and enabled Cloudflare security features. Confirm the policy matches the actual configuration and any applicable consent requirements; do not assume analytics configuration is complete merely because the policy mentions it.
-4. Check all legal URLs, the form, and homepage fragment links on the deployment. Keep source-code hosting on GitHub separate from visitor-facing hosting on Cloudflare.
+Deploy the current static site first, with the contact form disabled. Form delivery and a custom domain are separate follow-up tasks.
+
+**Deployment status:** awaiting Cloudflare account authorization and project creation. The production URL and automatic deployment have not yet been verified; record the actual `pages.dev` URL here after the first successful deployment.
+
+Use Cloudflare Pages' native GitHub integration with these dashboard settings:
+
+| Setting | Value |
+| --- | --- |
+| Project name | `cad-development`, if available |
+| GitHub repository | `CristianCristea/CAD-landing-page` (private) |
+| Production branch | `main` |
+| Framework preset | None |
+| Root directory | Leave blank (repository root) |
+| Build command | `exit 0` |
+| Build output directory | `cad-website` |
+| Automatic production deployments | Enabled |
+| Preview deployments | All non-production branches |
+
+In the Cloudflare dashboard, open Workers & Pages → Create application → Pages → Import an existing Git repository. Authorize the Cloudflare GitHub application for this repository, select it, apply the settings above, and choose Save and Deploy. Use the generated `pages.dev` URL for the initial release. These are dashboard settings, not configuration automatically applied by this README. See the [static HTML guide](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/) and [Git integration documentation](https://developers.cloudflare.com/pages/configuration/git-integration/).
+
+Only the contents of `cad-website/` are published. Keep this output directory unchanged so `company-documents/` and the archived `landing-page/` remain outside the deployed artifact. No package installation, GitHub Actions workflow, deployment secret, or build step is needed.
+
+After creating the project, enable Metrics → Web Analytics. Cloudflare injects the beacon on the next deployment; no account-specific beacon token is embedded in this source. See [Cloudflare setup](https://developers.cloudflare.com/pages/how-to/web-analytics/).
+
+### Push workflow and release checks
+
+1. Check changes locally, including `node --check cad-website/assets/js/blue.js` from the repository root. Commit the intended files and push `main` to `origin`; Cloudflare automatically deploys that commit. Other branches create preview deployments rather than replacing production.
+2. In the project's Deployments tab, confirm the production deployment succeeds and its commit SHA matches the pushed commit. Check the generated HTTPS URL before treating the release as complete.
+3. Verify the homepage, legal pages, relative assets, favicon, section anchors, and the old `blue.html` redirect, including query parameters and fragments. Check mobile and desktop layouts and keyboard navigation. Confirm the form remains disabled and attempting submission generates no requests.
+4. Confirm Web Analytics is enabled and the redeployed site loads its beacon. Inspect requests and cookies against the privacy policy and the enabled Cloudflare settings; mentioning analytics in the policy does not enable it.
+5. Confirm company documents are absent from the published files. A request to an excluded path must not return the PDF; a fallback HTML response is not evidence that the document was published.
+
+Before enabling form delivery in a later release, select the delivery service and destination inbox, verify receipt, and update the privacy policy to describe the implemented data handling. The business email remains omitted for now.
 
 ## Projects
 
@@ -91,13 +120,15 @@ Photo by **Karl Pawlowicz** on Unsplash: [A computer monitor sitting on top of a
 
 The form is intentionally inactive. It has editable Name, Email, Company, and Message fields, a disabled Send button, and an availability note. The disabled button, inline `onsubmit` guard, and JavaScript submission guard prevent normal submission. The form sends and stores no data. The checked-in website code has no submission endpoint, cookies, browser storage, or analytics beacon; Cloudflare may add analytics during deployment as described above.
 
-Contact wiring is the next task, before deployment, and requires a delivery service and destination inbox. Hosting has been selected as Cloudflare. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
+Contact wiring follows the initial Cloudflare Pages deployment and requires a delivery service and destination inbox. The intended Cloudflare redirect or email-routing behavior will be clarified during that task. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
 
 ## Source archive
 
 `../landing-page/` remains unchanged. The initial agency identity and project names derive from that archive; the current positioning and process copy follow the approved homepage revision. The abstract logo and matching icons are new artwork created for the standalone site. The standalone site does not depend on the archive at runtime.
 
 ## Verification
+
+Deployment preparation was checked locally on 2026-10-26: JavaScript syntax and Git whitespace checks passed; all 108 local HTML asset/link/fragment references across five HTML files and all CSS asset references resolve. The publish directory contains no PDFs or symlinks. Headless Chrome checks passed on the homepage and three legal pages at 320, 390, 767, 768, 1024, and 1440px, including loaded images, no horizontal overflow, keyboard skip navigation, menu Enter/Escape behavior, section focus, the disabled form with no submission requests or browser storage, the blue-page redirect with query and fragment preservation, and no-JavaScript navigation/content. Mobile and desktop screenshots were reviewed. These checks used local files; HTTPS hosting, injected analytics, and deployment on push still require the Cloudflare project to be connected and verified.
 
 The detailed project cards were checked in headless Chrome on 2026-10-26 at 320, 390, 767, 768, 1024, and 1440px. Checks passed for project order, one/two-column layouts, visible content without JavaScript, loaded logos, heading hierarchy, keyboard Tab/Enter access to Lavina, visible focus, and 45 text-contrast samples. Local links and ARIA references resolve, the JavaScript syntax check passes, and the public Lavina destination was reachable. All homepage HTML outside the work section and all unrelated files were verified unchanged. Mobile and desktop section screenshots were reviewed; other browser engines were not tested. No deployment was performed.
 
