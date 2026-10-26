@@ -57,9 +57,9 @@ Sources checked for the privacy wording:
 
 ## Cloudflare Workers deployment
 
-Keep the existing `cad-landing-page` Worker and its static assets. The contact endpoint is implemented in the same Worker. This change has not been deployed; complete the contact setup below before release.
+Keep the existing `cad-landing-page` Worker and its static assets. The contact endpoint is implemented in the same Worker. The form implementation is committed; complete the contact setup below before accepting enquiries.
 
-**Deployment status:** the owner has created the Worker; its last shared dashboard snapshot reported a disconnected GitHub account. Confirm the connection or reconnect GitHub before relying on deployment on push. The production URL and automatic deployment have not yet been verified; record the actual `workers.dev` URL here after the first successful deployment.
+**Deployment status:** the owner confirmed that GitHub access for Cloudflare is now allowed and authorized a fresh push to trigger a build. Confirm that Cloudflare deploys the latest `main` commit successfully. Live contact delivery has not been tested; no test emails have been authorized.
 
 The repository-root `wrangler.jsonc` names the existing Worker and sets `assets.directory` to `./cad-website`. This tells Wrangler which directory to publish; there is no Pages-style build output field. The `main` entry points to `src/worker.mjs`; `/api/*` runs through the Worker first and other static pages retain normal asset serving. The site still needs no application build.
 
