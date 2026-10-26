@@ -14,6 +14,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png">
     <link rel="stylesheet" href="assets/css/blue.css">
     <script src="assets/js/blue.js" defer></script>
+    <script src="assets/js/contact.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -146,12 +147,16 @@
 
       <section class="contact section-pad" id="contact" aria-labelledby="contact-title">
         <div class="container contact-grid">
-          <div class="contact-copy"><p class="eyebrow">04 / Your next project</p><h2 id="contact-title">Discuss your project</h2><p>Briefly describe what you want to improve or build, and the tools you use today.</p></div>
-          <form class="contact-form" aria-labelledby="contact-title" aria-describedby="form-note" onsubmit="return false">
-            <div class="form-row"><div class="field"><label for="contact-name">Your name</label><input id="contact-name" name="name" autocomplete="name" placeholder="Alex Morgan" type="text"></div><div class="field"><label for="contact-email">Email address</label><input id="contact-email" name="email" autocomplete="email" placeholder="alex@company.com" type="email"></div></div>
-            <div class="field"><label for="contact-company">Company <span>(optional)</span></label><input id="contact-company" name="company" autocomplete="organization" placeholder="Your company" type="text"></div>
-            <div class="field"><label for="contact-message">What would you like to improve or build?</label><textarea id="contact-message" name="message" rows="4" placeholder="Describe your current workflow, tools, and what you’d like to change…"></textarea></div>
-            <div class="form-bottom"><p id="form-note">Our contact form is coming soon.<br>Messages cannot be sent yet.</p><button class="button" type="submit" disabled>Send message <span aria-hidden="true">↗</span></button></div>
+          <div class="contact-copy"><p class="eyebrow">04 / Your next project</p><h2 id="contact-title">Discuss your project</h2><p>Briefly describe what you want to improve or build, and the tools you use today.</p><p class="contact-fallback">Prefer email? <a href="mailto:contact@cad-dev.com">contact@cad-dev.com</a></p></div>
+          <form class="contact-form" aria-labelledby="contact-title" action="/api/contact" method="post" aria-describedby="form-status">
+            <div class="form-row"><div class="field"><label for="contact-name">Your name</label><input id="contact-name" name="name" required maxlength="100" autocomplete="name" placeholder="Alex Morgan" type="text"></div><div class="field"><label for="contact-email">Email address</label><input id="contact-email" name="email" required maxlength="254" autocomplete="email" placeholder="alex@company.com" type="email"></div></div>
+            <div class="field"><label for="contact-company">Company <span>(optional)</span></label><input id="contact-company" name="company" maxlength="200" autocomplete="organization" placeholder="Your company" type="text"></div>
+            <div class="field"><label for="contact-message">What would you like to improve or build?</label><textarea id="contact-message" name="message" required maxlength="5000" rows="4" placeholder="Describe your current workflow, tools, and what you’d like to change…"></textarea></div>
+            <div class="contact-honeypot" hidden aria-hidden="true"><label for="contact-website">Leave this field empty</label><input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off" maxlength="200"></div>
+            <!-- Existing Turnstile widget for cad-dev.com. Its secret belongs only in the Worker. -->
+            <div id="contact-verification" class="contact-verification" data-sitekey="0x4AAAAAAFm9On6rp9qeC-Fh" role="group" aria-label="Spam protection"></div>
+            <noscript><p>Please email <a href="mailto:contact@cad-dev.com">contact@cad-dev.com</a>. The form requires JavaScript for spam protection.</p></noscript>
+            <div class="form-bottom"><p id="form-status" class="form-status" role="status" aria-live="polite" aria-atomic="true">Complete the verification before sending.</p><button class="button" type="submit" disabled>Send message <span aria-hidden="true">↗</span></button></div>
           </form>
         </div>
       </section>

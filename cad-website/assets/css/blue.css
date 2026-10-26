@@ -130,6 +130,12 @@ h1 > span { color: var(--accent); }
 .field textarea { resize: vertical; min-height: 140px; }
 .form-bottom { display: flex; align-items: center; flex-wrap: wrap; gap: 20px 32px; margin-top: 24px; }
 .form-bottom p { font-size: 12px; }
+.contact-fallback { margin-top: 16px; }
+.contact-honeypot { display: none; }
+.contact-verification { max-width: 100%; min-height: 65px; }
+.form-status { flex: 1 1 260px; min-height: 1.7em; }
+.form-status.is-error { color: #9D2727; }
+.field [aria-invalid="true"] { border-color: #9D2727; }
 .site-footer { background: var(--surface); border-top: 1px solid var(--divider); }
 .footer-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px 48px; padding-block: 40px 32px; font-size: 12px; }
 .footer-brand > p { margin-top: 16px; }

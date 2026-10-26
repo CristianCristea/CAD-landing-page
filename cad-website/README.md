@@ -8,7 +8,7 @@ The homepage leads with custom business software, integrations, and practical AI
 
 The hero describes business understanding and direct software delivery, without a separate About section or unverified team credentials. The process starts with an initial discussion of goals and priorities. Detailed discovery is included in the project proposal and takes place after agreement, establishing requirements and scope before development. Later stages provide working demonstrations and a tested release with documentation and handover. Post-launch issue-resolution scope and duration are defined in the proposal; ongoing maintenance is agreed separately.
 
-This revision is in English and states that CAD works with clients internationally, in English and German. No language switch is shown until German pages are available; the site does not target a specific industry or geography. Working contact delivery and evidence-backed case studies are deferred, so this content revision does not make the site ready to receive enquiries.
+This revision is in English and states that CAD works with clients internationally, in English and German. No language switch is shown until German pages are available; the site does not target a specific industry or geography. The contact form is implemented locally; production delivery requires the Cloudflare setup below. No German pages or language system have been added.
 
 ## Preview
 
@@ -26,7 +26,9 @@ Visit `http://127.0.0.1:8080`. Stop the server with Ctrl+C. The old `blue.html` 
 - `index.html`: content, metadata, navigation, projects, and responsive hero image.
 - `legal.html`, `privacy.html`, and `terms.html`: company information, website data processing, and website-use terms. All pages share the stylesheet and navigation script; header and footer HTML is repeated in each page and must be kept consistent.
 - `assets/css/blue.css`: the retained blue palette, Manrope typography, and responsive layouts. Mobile navigation and single-column layouts start at 767px and below.
-- `assets/js/blue.js`: accessible mobile navigation, the form submission guard, and the copyright year.
+- `assets/js/blue.js`: accessible mobile navigation and the copyright year.
+- `assets/js/contact.js`: Turnstile, asynchronous contact submission, accessible status messages, and duplicate-click prevention.
+- `../src/worker.mjs`: server-side contact validation and native Cloudflare email delivery; never publish this file as a static asset.
 - `assets/images/cad-symbol-master.png`: the full-resolution generated abstract brand symbol on a transparent background.
 - `assets/images/cad-symbol.png`: optimized 256px symbol used at 44px in the header and footer, paired with a Manrope CAD Development wordmark.
 - `favicon.ico`: matching symbol in 16, 32, 48, and 64px sizes. `assets/images/favicon-32.png` is the explicit browser PNG icon; `assets/images/apple-touch-icon.png` is the 180px touch icon. All variants preserve transparency.
@@ -44,7 +46,7 @@ These details were transcribed from the supplied licence PDF. The owner confirme
 
 The original PDF is preserved at `../company-documents/DOUBLED VENTURES - FZCO -LIC NEW - DIGITAL.pdf`, outside the site deployment directory. Deploy only `cad-website/`; do not include the source document in public build artifacts. Moving it outside this directory does not make it private if it is separately committed to a public repository.
 
-The pages use postal contact details and link to `index.html#contact`, as requested. Website terms do not replace client project agreements. The privacy policy covers the intended Cloudflare production setup; it does not activate analytics or claim that contact-form messages are already being processed.
+The pages use postal contact details and link to `index.html#contact`; the contact section and privacy page also provide `contact@cad-dev.com`. Website terms do not replace client project agreements. The privacy policy covers the intended Cloudflare production setup; it does not activate analytics or claim that contact-form messages are already being processed.
 
 Sources checked for the privacy wording:
 
@@ -55,11 +57,11 @@ Sources checked for the privacy wording:
 
 ## Cloudflare Workers deployment
 
-Deploy the current static site first, with the contact form disabled. Form delivery and a custom domain are separate follow-up tasks. Workers Static Assets replaces the earlier Pages setup; keep the existing `cad-landing-page` Worker.
+Keep the existing `cad-landing-page` Worker and its static assets. The contact endpoint is implemented in the same Worker. This change has not been deployed; complete the contact setup below before release.
 
-**Deployment status:** the owner has created the Worker, but its dashboard reports a disconnected GitHub account. Reconnect GitHub before relying on deployment on push. The production URL and automatic deployment have not yet been verified; record the actual `workers.dev` URL here after the first successful deployment.
+**Deployment status:** the owner has created the Worker; its last shared dashboard snapshot reported a disconnected GitHub account. Confirm the connection or reconnect GitHub before relying on deployment on push. The production URL and automatic deployment have not yet been verified; record the actual `workers.dev` URL here after the first successful deployment.
 
-The repository-root `wrangler.jsonc` names the existing Worker and sets `assets.directory` to `./cad-website`. This tells Wrangler which directory to publish; there is no Pages-style build output field. No Worker script or application build is needed for this static site.
+The repository-root `wrangler.jsonc` names the existing Worker and sets `assets.directory` to `./cad-website`. This tells Wrangler which directory to publish; there is no Pages-style build output field. The `main` entry points to `src/worker.mjs`; `/api/*` runs through the Worker first and other static pages retain normal asset serving. The site still needs no application build.
 
 Use these Workers Builds settings:
 
@@ -76,7 +78,7 @@ Use these Workers Builds settings:
 
 Reconnect the repository under the Worker's Settings → Builds. If authorization is missing, configure the Cloudflare Workers & Pages application in GitHub's installed applications and grant access to this repository. Keep the existing Worker name, which must agree with `wrangler.jsonc`. Use the generated `workers.dev` URL for the initial release. See [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/) and [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
-Only the contents of `cad-website/` are published. Keep `assets.directory` unchanged so `company-documents/` and the archived `landing-page/` remain outside the deployed artifact. Cloudflare runs Wrangler as deployment tooling; the website itself still has no runtime dependencies or build step. Cloudflare manages the build's deployment credentials; do not commit tokens to this repository.
+Only the contents of `cad-website/` are published, excluding `README.md` via `.assetsignore` so deployment instructions and the private inbox address are not served. Keep `assets.directory` unchanged so `company-documents/` and the archived `landing-page/` remain outside the deployed artifact. Cloudflare runs Wrangler as deployment tooling; the website itself still has no runtime dependencies or build step. Cloudflare manages the build's deployment credentials; do not commit tokens to this repository.
 
 Web Analytics is still pending account setup. The earlier Pages-specific one-click injection instructions do not apply to this Worker. Configure the deployed hostname in Cloudflare Web Analytics and follow its installation instructions; for manual installation, use the site's generated beacon snippet on each content page, then redeploy and verify requests. No beacon has been added yet. Worker request metrics are separate from browser-based Web Analytics. See [Web Analytics setup](https://developers.cloudflare.com/web-analytics/get-started/).
 
@@ -84,11 +86,11 @@ Web Analytics is still pending account setup. The earlier Pages-specific one-cli
 
 1. Check changes locally, including `node --check cad-website/assets/js/blue.js` from the repository root. Commit the intended files and push `main` to `origin`; Cloudflare automatically deploys that commit. With preview builds enabled, other branches create previews rather than replacing production.
 2. In the project's Deployments tab, confirm the production deployment succeeds and its commit SHA matches the pushed commit. Check the generated HTTPS URL before treating the release as complete.
-3. Verify the homepage, legal pages, relative assets, favicon, section anchors, and the old `blue.html` redirect, including query parameters and fragments. Check mobile and desktop layouts and keyboard navigation. Confirm the form remains disabled and attempting submission generates no requests.
+3. Verify the homepage, legal pages, relative assets, favicon, section anchors, and the old `blue.html` redirect, including query parameters and fragments. Check mobile and desktop layouts and keyboard navigation. Use the mock tests below for the form before release. Live receipt testing requires separate authorization.
 4. Confirm Web Analytics is enabled and the redeployed site loads its beacon. Inspect requests and cookies against the privacy policy and the enabled Cloudflare settings; mentioning analytics in the policy does not enable it.
 5. Confirm company documents are absent from the published files. A request to an excluded path must not return the PDF; a fallback HTML response is not evidence that the document was published.
 
-Before enabling form delivery in a later release, select the delivery service and destination inbox, verify receipt, and update the privacy policy to describe the implemented data handling. The business email remains omitted for now.
+Before releasing the contact integration, complete the bindings, domain, and Turnstile steps below. The privacy page describes the implemented contact and spam-protection processing.
 
 ## Projects
 
@@ -119,15 +121,49 @@ Photo by **Karl Pawlowicz** on Unsplash: [A computer monitor sitting on top of a
 
 ## Contact form
 
-The form is intentionally inactive. It has editable Name, Email, Company, and Message fields, a disabled Send button, and an availability note. The disabled button, inline `onsubmit` guard, and JavaScript submission guard prevent normal submission. The form sends and stores no data. The checked-in website code has no submission endpoint, cookies, browser storage, or analytics beacon; Cloudflare may add analytics during deployment as described above.
+The existing form posts JSON to `/api/contact`. The visible email fallback is `contact@cad-dev.com`. Required fields are name (1–100 characters), email (up to 254), and message (1–5,000); company is optional (up to 200). The request body is limited to 32 KiB even without a trustworthy Content-Length header. A hidden honeypot and server-verified Turnstile token precede every email. The handler checks the request URL, Origin, verified hostname (`cad-dev.com`), and action (`contact`). Other hostnames, including `www.cad-dev.com` and `workers.dev`, cannot submit.
 
-Contact wiring follows the initial Cloudflare Workers deployment and requires a delivery service and destination inbox. The intended Cloudflare redirect or email-routing behavior will be clarified during that task. The current legal contact uses the supplied postal address; the owner requested leaving the business email out for now. Form delivery remains deferred until a service and destination are provided. The contact section uses one shared heading for its introduction and accessible form label.
+`CONTACT_EMAIL` is a `send_email` binding restricted to `cristian.cristea.dev@gmail.com`. The Worker sends from `contact@cad-dev.com`, sets Reply-To to the validated visitor email, and sends a plain-text message with a fixed subject. Sender and recipient cannot be supplied by the browser. No API token or SMTP credentials are needed for the native binding. The recipient address in the server configuration is not a credential; it is outside the public assets directory.
+
+The endpoint awaits Cloudflare's acceptance and a message ID before returning HTTP 200 with `{ "ok": true, "code": "sent" }`. It does not queue or automatically retry emails. Validation errors return 400, rejected verification/origins 403, unsupported methods 405, oversized bodies 413, unsupported media types 415, email failures 502, and unavailable setup/verification services 503. Responses are not cached and never expose raw service errors. The Worker logs no submitted content and persists no messages. Inbox receipt is distinct from service acceptance.
+
+The browser announces progress and results, disables repeat submissions while pending, preserves values on failure, and resets verification after each attempt. A lost network response is reported as an unconfirmed outcome rather than automatically retrying. Turnstile's single-use tokens reject replay attempts. The form requires JavaScript; the email link remains available without it. A missing public sitekey leaves Send disabled with an email fallback. The existing widget’s public sitekey, `0x4AAAAAAFm9On6rp9qeC-Fh`, is configured in `index.html`. The secret must already be saved in the Worker before release; its presence and value have not been verified from this workspace.
+
+### Remaining Cloudflare setup (do not execute until release is authorized)
+
+1. **Email Sending:** in Compute → Email Service → Email Sending, onboard `cad-dev.com` if needed. Complete and verify Cloudflare's generated domain authentication records. Preserve existing mail routing; sending-domain authentication and incoming Email Routing are separate. The existing redirect rule for `contact@cad-dev.com` can stay unchanged.
+2. **Destination:** confirm `cristian.cristea.dev@gmail.com` is a verified destination in Cloudflare Email Routing. If already verified by the existing rule, no new verification or redirect is needed. The form sends directly to this inbox.
+3. **Turnstile:** reuse the existing widget `0x4AAAAAAFm9On6rp9qeC-Fh`; do not create a replacement or change its clearance setting. Its public sitekey is already installed on `#contact-verification` in `index.html`. Confirm that the widget allows `cad-dev.com`. The backend allows this exact hostname and action `contact` only. Do not use test keys in production.
+4. **Secret:** on `cad-landing-page`, Settings → Variables and Secrets, confirm a Secret named `TURNSTILE_SECRET_KEY` contains this widget's secret. If missing, add it through the dashboard when authorized; applying the change updates the deployed Worker. Do not overwrite a correctly configured secret. Never put it in HTML, JavaScript, README, or committed configuration. `.dev.vars*` and `.env*` are ignored. Automated retrieval/storage must follow the guarded existing-widget flow described below, using an approved absolute Wrangler executable rather than `npx` or project-local package resolution.
+5. **Bindings:** `wrangler.jsonc` already declares `ASSETS`, the `CONTACT_EMAIL` send-email binding with `destination_address = cristian.cristea.dev@gmail.com`, and `/api/*` Worker-first routing. Wrangler applies these on deployment. `remote: false` keeps local email simulation local; it does not disable the production binding. No additional email handler, queue, database, or third-party mail service is required.
+6. **Hostname and release:** confirm `cad-dev.com` maps to this Worker under Settings → Domains & Routes, and that GitHub remains connected. Root directory stays `/`, build command stays blank, deploy command stays `npx wrangler deploy`. After separately authorizing release, commit/push the intended changes to `main` (which triggers deployment), or run the deploy command manually. Do not run both unnecessarily.
+7. **Post-release verification:** check assets, legal URLs, the widget, and API method handling first. Send a real submission only after authorization; confirm service acceptance, actual inbox receipt, and Reply-To. This work has not sent any real emails or modified Cloudflare settings.
+
+### Local checks without sending email
+
+From the repository root:
+
+```bash
+node --test tests/contact.test.mjs
+node --check src/worker.mjs
+node --check cad-website/assets/js/contact.js
+node --check cad-website/assets/js/blue.js
+npx wrangler deploy --dry-run --outdir /tmp/cad-contact-dry-run
+```
+
+The tests inject mocked Siteverify and email services; they cannot send email. They cover success, waiting for acceptance, field and body limits, Unicode messages, header injection, browser-controlled addressing, honeypots, origin/hostname/action checks, invalid/replayed tokens, missing setup, provider failure, and static asset delegation. Browser checks should mock Turnstile and `/api/contact` rather than use remote email bindings. Never add `remote: true` or `wrangler dev --remote` for these checks. Do not weaken production hostname checks for local testing.
+
+Existing-widget integration follows [Turnstile Spin](https://developers.cloudflare.com/turnstile/spin/prompt.md). Automatic secret retrieval requires a separately approved canonical Wrangler executable, exact account/Worker/configuration/secret destination, and explicit confirmation before any secret getter or write. The dashboard secret remains the normal setup path. A real successful submission and replay rejection remain unverified: they require a running backend and separate authorization to send email.
+
+Official references: [email API](https://developers.cloudflare.com/email-service/api/send-emails/workers-api/), [binding restrictions](https://developers.cloudflare.com/email-service/configuration/send-bindings/), [sending-domain setup](https://developers.cloudflare.com/email-service/get-started/send-emails/), [Turnstile server validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), and [Turnstile test keys](https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
 
 ## Source archive
 
 `../landing-page/` remains unchanged. The initial agency identity and project names derive from that archive; the current positioning and process copy follow the approved homepage revision. The abstract logo and matching icons are new artwork created for the standalone site. The standalone site does not depend on the archive at runtime.
 
 ## Verification
+
+The contact integration passed 10 focused server tests with mocked services and JavaScript syntax checks. Mocked headless Chrome checks passed at 320, 390, 767, 768, 1024, and 1440px for the form layout, missing setup, fallback link, sending and success states, provider/network/validation errors, retained inputs, duplicate submission prevention, token expiration, keyboard order, live status markup, and no-JavaScript fallback. Real Turnstile challenges, screen-reader announcements, deployed hostname routing, and actual email acceptance/receipt require post-setup verification and were not exercised. Wrangler 4.153.0 accepted the configuration in a deployment dry run. The local `wrangler dev` runtime could not start because this machine lacks the GLIBC versions required by workerd (up to 2.35), so actual workerd routing was not exercised here. No deployment, push, or real email was performed.
 
 The Workers configuration passed `wrangler 4.153.0 deploy --dry-run` on 2026-10-26, reading 28 files from `cad-website/`. The Worker name, asset directory, homepage presence, and exclusion of PDFs and symlinks were checked, along with JavaScript syntax and Git whitespace. No website HTML, CSS, or JavaScript changed during this configuration update. A dry run does not verify GitHub authorization, analytics, or a live deployment.
 
@@ -141,4 +177,4 @@ The revised four-project homepage was verified in headless Chrome on 2026-10-26 
 
 Checks also passed for all four project IDs and numbering, project and brand image loading, navigation targets, mobile menu Escape and selection behavior, keyboard skip-link focus, reduced motion, favicon, no-JavaScript navigation, direct-file loading, and the old blue-page redirect (including query and fragment preservation with JavaScript). The contact notice and disabled button remain in place; a submission attempt was canceled and generated no network requests. The page title matches the Open Graph title. Project-card markup and the source archive were verified unchanged. This is a Chrome check, not cross-browser certification.
 
-Run `node --check assets/js/blue.js` for JavaScript syntax. For visual and interaction checks, use phone, tablet, and desktop widths, especially 767px and 768px around the navigation breakpoint. Check all navigation anchors, keyboard focus, mobile menu closing on Escape and link selection, reduced-motion scrolling, readable content and navigation without JavaScript, logo/favicon and responsive image loading, and the inactive contact form. Check both direct-file and HTTP loading, plus the old blue-page redirect.
+The entries above describe historical checks before the contact implementation. For the current form, use the contact checks above. Run `node --check assets/js/blue.js` for navigation JavaScript syntax. For visual and interaction checks, use phone, tablet, and desktop widths, especially 767px and 768px around the navigation breakpoint. Check all navigation anchors, keyboard focus, mobile menu closing on Escape and link selection, reduced-motion scrolling, readable content and navigation without JavaScript, logo/favicon and responsive image loading, and the contact form states. Check both direct-file and HTTP loading, plus the old blue-page redirect.

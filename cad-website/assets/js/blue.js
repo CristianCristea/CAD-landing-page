@@ -43,11 +43,5 @@ if (navigation && menuToggle) {
   mobileLayout.addEventListener("change", () => setMenuOpen(false));
 }
 
-// Display only. No endpoint, network request, or storage is connected.
-// The disabled button and inline guard also prevent native submission without this file.
-document.querySelector(".contact-form")?.addEventListener("submit", (event) => {
-  event.preventDefault();
-});
-
 const copyrightYear = document.querySelector("#copyright-year");
 if (copyrightYear) copyrightYear.textContent = String(new Date().getFullYear());
