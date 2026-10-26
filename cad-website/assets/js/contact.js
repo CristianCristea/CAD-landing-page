@@ -5,6 +5,8 @@
   if (!form) return;
   const button = form.querySelector('button[type="submit"]');
   const status = document.querySelector("#form-status");
+  const confirmation = document.querySelector("#contact-success");
+  const confirmationMessage = document.querySelector("#contact-success-message");
   const widget = document.querySelector("#contact-verification");
   const controls = [...form.querySelectorAll("input, textarea")];
   const sitekey = widget.dataset.sitekey.trim();
@@ -26,6 +28,14 @@
     control.removeAttribute("aria-invalid");
     control.removeAttribute("aria-describedby");
   });
+  const hideConfirmation = () => {
+    confirmation.hidden = true;
+    confirmationMessage.textContent = "";
+  };
+  document.querySelector("#contact-success-close").addEventListener("click", () => {
+    hideConfirmation();
+    form.elements.namedItem("name").focus();
+  });
   form.addEventListener("input", event => {
     event.target.removeAttribute("aria-invalid");
     event.target.removeAttribute("aria-describedby");
@@ -40,6 +50,7 @@
       return;
     }
     clearErrors();
+    hideConfirmation();
     const payload = Object.fromEntries(new FormData(form));
     payload.token = token;
     pending = true;
@@ -60,7 +71,10 @@
       const result = await response.json();
       if (response.ok && result.ok === true && result.code === "sent") {
         form.reset();
-        announce("Thank you. Your message has been accepted for delivery.");
+        announce("");
+        confirmation.hidden = false;
+        confirmationMessage.textContent = "Thank you! Your message has been sent.";
+        confirmation.focus();
       } else {
         const messages = {
           invalid_fields: "Please check your details and try again.",
